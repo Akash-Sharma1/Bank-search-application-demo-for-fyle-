@@ -1,0 +1,55 @@
+
+.App-logo {
+  height: 5vmin;
+  padding-left: 2%;
+  padding-right: 2%;
+  cursor: pointer;
+}
+.App {
+  background-color: #282c34;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  padding: 2%;
+}
+
+.link {
+  color: #61dafb;
+}
+.selectbox{
+  margin-bottom: 1%;
+}
+#searchinput {
+  width: 400px;
+}
+#searchclear {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ccc;
+}
+.mainbody{
+  background-color: #ffffff;
+  color: #282c34;
+  border-radius: 3px;
+  height: 100%;
+  padding: 1%;
+}
+td{
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #eee;
+}
+tr:nth-child(odd) {
+ background-color: #fff;
+}
