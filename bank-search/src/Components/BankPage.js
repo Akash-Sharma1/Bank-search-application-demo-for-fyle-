@@ -12,7 +12,6 @@ export default class BankPage extends Component {
             Banklist: {},
             SelectedCity: "MUMBAI",
             Cities: ["MUMBAI", "DELHI", "KOLKATA", "BANGALORE", "CUTTACK"],
-            Pages: 10,
             Rows: 5,
             Onscreenlist: [],
             Pagenumber: 0,
@@ -22,8 +21,16 @@ export default class BankPage extends Component {
         this.domatch = this.domatch.bind(this);
     }
 
-    domatch(a, b) {
-
+    domatch(text, search) {
+        if (text.length < search.length) return false;
+        text = text.toString();
+        search = search.toString();
+        var a = text.toLowerCase();
+        var b = search.toLowerCase();
+        for (var i = 0; i < search.length; i++) {
+            if (a[i] != b[i]) return false;
+        }
+        return true;
     }
 
     refreshlist() {
@@ -34,8 +41,14 @@ export default class BankPage extends Component {
         if (search != "") {
             var templist = [];
             for (var i = 0; i < banklist.length; i++) {
-
+                for (var keys in banklist[i]) {
+                    if (this.domatch(banklist[i][keys], search)) {
+                        templist.push(banklist[i]);
+                        break;
+                    }
+                }
             }
+            banklist = templist;
         }
 
         var totalP = parseInt(banklist.length / this.state.Rows);
@@ -80,11 +93,11 @@ export default class BankPage extends Component {
 
     render() {
         let Datatobeshown;
-        if (this.state.isloading !== 0) { Datatobeshown = <div><h4 style={{ minHeight: "68vh", marginBottom: "5px" }}>Fetching Data...</h4></div> }
+        if (this.state.isloading !== 0) { Datatobeshown = <div><h4 style={{ minHeight: "62.8vh", marginBottom: "5px" }}>Fetching Data...</h4></div> }
         else if (this.state.Onscreenlist.length == 0) {
-            Datatobeshown = <h4>Nothing to Show... :(</h4>
+            Datatobeshown = <h4 style={{ minHeight: "62.8vh", marginBottom: "5px" }}>Nothing to Show... :(</h4>
         } else {
-            Datatobeshown = <div style={{ minHeight: "68vh", marginBottom: "5px" }}>
+            Datatobeshown = <div style={{ minHeight: "62.8vh", marginBottom: "5px" }}>
                 <table className="table">
                     <thead>
                         <tr>
@@ -118,9 +131,9 @@ export default class BankPage extends Component {
                 </select>
 
                 <div className="mainbody">
-                    <div style={{ minHeight: 36, marginBottom: "2%" }}>
-                        <span style={{ position: "absolute", left: "3%" }}>List of banks in {this.state.SelectedCity}</span>
-                        <span style={{ position: "absolute", right: "3%" }}>
+                    <div className="mb" style={{ minHeight: 36 }}>
+                        <span className="leftside">List of banks in {this.state.SelectedCity}</span>
+                        <span className="rightside">
                             <div className="btn-group">
                                 <input id="searchinput" type="search" className="form-control" placeholder="Search" onChange={() => this.refreshlist()} />
                                 <span id="searchclear" className="glyphicon glyphicon-remove-circle" onClick={
@@ -133,9 +146,9 @@ export default class BankPage extends Component {
                     {Datatobeshown}
 
                     <div style={{ display: "block", }}>
-                        <div style={{ display: "inline-block", width: "32%" }}>
-                            <div style={{ display: "inline-block", marginRight: "2%" }}>Rows per page: </div>
-                            <select className="form-control" style={{ display: "inline-block", width: "40%" }}
+                        <div className="sameline" style={{ width: "32%" }}>
+                            <div className="sameline mr" >Rows per page: </div>
+                            <select className="form-control sameline" style={{ width: "40%" }}
                                 onChange={(e) => {
                                     this.setState({ Rows: parseInt(e.target.value) }, () => { this.refreshlist(); })
                                 }} >
@@ -144,7 +157,7 @@ export default class BankPage extends Component {
                                 <option>15</option>
                             </select>
                         </div>
-                        <div style={{ display: "inline-block", width: "50%" }}>
+                        <div className="sameline" style={{ width: "50%" }}>
                             <img src={require('../chevron-left.svg')} alt="1" className="App-logo" onClick={() => {
                                 console.log("Clicked");
                                 this.setState({ Pagenumber: 0 }, () => { this.refreshlist(); })
@@ -153,7 +166,7 @@ export default class BankPage extends Component {
                                 this.setState({ Pagenumber: Math.max((parseInt(this.state.Pagenumber) - 1), 0) }, () => { this.refreshlist(); });
                             }} />
 
-                            <div style={{ display: "inline-block", width: "30%", textAlign: "center" }}>Page number : {this.state.Pagenumber} of {this.state.TotalPages}</div>
+                            <div className="sameline" style={{ width: "30%", textAlign: "center" }}>Page number : {this.state.Pagenumber} of {this.state.TotalPages}</div>
 
                             <img src={require('../chevron-right.svg')} alt="3" className="App-logo" onClick={() => {
                                 this.setState({ Pagenumber: Math.min((parseInt(this.state.Pagenumber) + 1), this.state.TotalPages) }, () => { this.refreshlist(); });

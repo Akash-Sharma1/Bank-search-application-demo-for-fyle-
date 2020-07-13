@@ -53,3 +53,33 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
  background-color: #fff;
 }
+.sameline{
+  display:inline-block
+}
+.mr{
+  margin-right: 2%;
+}
+.mb{
+  margin-bottom: 2%;
+}
+.leftside{
+  position: absolute;
+  left: 3%;
+}
+.rightside{
+  position: absolute;
+  right: 3%;
+}
+
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0px;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+  background: #FF0000;
+}
