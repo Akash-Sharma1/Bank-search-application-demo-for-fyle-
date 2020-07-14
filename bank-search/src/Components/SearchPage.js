@@ -3,45 +3,23 @@ import React, { Component } from 'react'
 export default class SearchPage extends Component {
     constructor(props) {
         super(props)
-
-        this.state = {
-            List: [],
-            isloaded: false,
-        }
-        this.renderlist = this.renderlist.bind(this);
-    }
-
-    renderlist() {
-        this.setState({ isloaded: true });
-        var templist = [];
-        for (var keys in this.props.BankList) {
-            for (var i = 0; i < this.props.BankList[keys].length; i++) {
-                if (parseInt(this.props.BankList[keys][i].bank_id) === parseInt(this.props.match.params.id)) {
-                    templist.push(this.props.BankList[keys][i]);
-                }
-            }
-        }
-        this.setState({ List: templist });
     }
 
     render() {
         let body;
-        if (this.props.isloading === true && this.state.isloaded === false) {
+        if (this.props.isloading === true) {
             body = <h4>Fetching please wait...</h4>
         }
         else {
-            if (this.state.isloaded === false) this.renderlist();
-            body = this.state.List.map((B) => {
-                return <li key={B.ifsc}>{B.bank_name} - {B.ifsc}<div className="mainbody" style={{ height: "25vh", width: "90%", marginBottom: "2%" }} key={B.ifsc}>
-                    Bank IFSC = {B.ifsc}<br />
-                    Bank Id = {B.bank_id}<br />
-                    Branch = {B.branch}<br />
-                    Address = {B.address}<br />
-                    City = {B.city}<br />
-                    District = {B.district}<br />
-                    State = {B.state}<br />
-                </div></li>
-            })
+            body = <li key={this.props.B.ifsc}>{this.props.B.bank_name} - {this.props.B.ifsc}<div className="mainbody" style={{ height: "25vh", width: "90%", marginBottom: "2%" }} key={this.props.B.ifsc}>
+                Bank IFSC = {this.props.B.ifsc}<br />
+                Bank Id = {this.props.B.bank_id}<br />
+                Branch = {this.props.B.branch}<br />
+                Address = {this.props.B.address}<br />
+                City = {this.props.B.city}<br />
+                District = {this.props.B.district}<br />
+                State = {this.props.B.state}<br />
+            </div></li>
         }
         return (
             <div style={{ minHeight: "95vh", color: "#ffffff" }}>

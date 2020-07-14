@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
 
 export default class BankPage extends Component {
     constructor(props) {
@@ -8,16 +9,33 @@ export default class BankPage extends Component {
         this.state = {
             Favorites: {},
             SelectedCity: "MUMBAI",
+            Cities: ["MUMBAI", "DELHI", "KOLKATA", "BANGALORE", "CUTTACK"],
             Rows: 5,
             Onscreenlist: [],
             Pagenumber: 0,
             TotalPages: 0,
-            redirectoBank: -1,
-            isloaded: false,
+            isloading: true,
+            Banklist: [],
         }
+        this.changebank = this.changebank.bind(this);
         this.refreshlist = this.refreshlist.bind(this);
         this.domatch = this.domatch.bind(this);
         this.changefav = this.changefav.bind(this);
+        this.matchbysearch = this.matchbysearch.bind(this);
+    }
+
+    changebank() {
+        axios.get(process.env.REACT_APP_BankListAPI + this.state.SelectedCity)
+            .then((response) => {
+                response = response.data;
+                this.setState({
+                    Banklist: response,
+                    isloading: false
+                }, () => this.refreshlist())
+            })
+            .catch(function (error) {
+                alert(error);
+            })
     }
 
     changefav(ifsc, b) {
@@ -27,6 +45,7 @@ export default class BankPage extends Component {
             Favorites: newfav
         })
     }
+
     domatch(text, search) {
         if (text.length < search.length) return false;
         text = text.toString();
@@ -39,10 +58,7 @@ export default class BankPage extends Component {
         return true;
     }
 
-    refreshlist() {
-        var BankList = this.props.BankList[this.state.SelectedCity];
-        if (typeof (BankList) === "undefined") return;
-
+    matchbysearch(BankList) {
         var search = "";
         if (document.getElementById("searchinput") !== null) search = document.getElementById("searchinput").value;
 
@@ -58,32 +74,47 @@ export default class BankPage extends Component {
             }
             BankList = templist;
         }
+        return BankList
+    }
+
+    refreshlist() {
+        var BankList = this.state.Banklist;
+        console.log(BankList);
+        if (typeof (BankList) === "undefined") return;
+
+        BankList = this.matchbysearch(BankList);
 
         var totalP = parseInt(BankList.length / this.state.Rows);
+        if (BankList.length % this.state.Rows == 0) totalP--;
         var currpage = this.state.Pagenumber;
         currpage = Math.max(0, currpage);
         currpage = Math.min(totalP, currpage);
+
         this.setState({
             TotalPages: totalP,
             Pagenumber: currpage,
             isloaded: true,
         })
+
         if (BankList.length % this.state.Rows > 0) totalP++;
         var newlist = []
-        for (i = currpage * this.state.Rows; i < currpage * this.state.Rows + this.state.Rows; i++) {
+        for (var i = currpage * this.state.Rows; i < currpage * this.state.Rows + this.state.Rows; i++) {
             if (i >= BankList.length) break;
             newlist.push(BankList[i]);
         }
         this.setState({ Onscreenlist: newlist });
     }
 
+    componentDidMount() {
+        this.changebank();
+    }
+
     render() {
         let Datatobeshown;
-        if (this.props.isloading === true && this.state.isloaded === false) {
+        if (this.state.isloading === true) {
             Datatobeshown = <div><h4 className="initialentry">Fetching Data...</h4></div>
         }
         else if (this.state.Onscreenlist.length === 0) {
-            if (this.state.isloaded === false) { this.refreshlist(); }
             Datatobeshown = <h4 className="initialentry">Nothing to Show... :(</h4>
         } else {
             Datatobeshown = <div className="initialentry">
@@ -98,7 +129,8 @@ export default class BankPage extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.Onscreenlist.map((B) => <OneRow key={B.ifsc} B={B} fav={this.state.Favorites[B.ifsc]} changefav={this.changefav} />)}
+                        {this.state.Onscreenlist.map((B) =>
+                            <OneRow key={B.ifsc} B={B} fav={this.state.Favorites[B.ifsc]} changefav={this.changefav} addbank={this.props.addbank} />)}
                     </tbody>
                 </table>
             </div>
@@ -106,9 +138,12 @@ export default class BankPage extends Component {
         return (
             <div style={{ height: "100%" }}>
                 <select className="form-control selectbox" onChange={(e) => {
-                    this.setState({ SelectedCity: e.target.value, Pagenumber: 0 }, () => { this.refreshlist(); })
+                    if (this.state.SelectedCity == e.target.value) return;
+                    this.setState({ SelectedCity: e.target.value, Pagenumber: 0, isloading: true }, () => {
+                        this.changebank();
+                    })
                 }} >
-                    {this.props.Cities.map((c) => { return <option key={c}>{c}</option> })}
+                    {this.state.Cities.map((c) => { return <option key={c}>{c}</option> })}
                 </select>
 
                 <div className="mainbody">
@@ -189,7 +224,7 @@ export class OneRow extends Component {
                 <td style={{ width: "5%" }} >
                     {image}
                 </td>
-                <td style={{ width: "40%" }} ><Link style={{ textDecoration: "none", color: "#282c34" }} to={"/bank/" + this.props.B.bank_id}> {this.props.B.bank_name}  </Link></td>
+                <td style={{ width: "40%" }} ><Link onClick={() => this.props.addbank(this.props.B)} style={{ textDecoration: "none", color: "#282c34" }} to={"/bank/" + this.props.B.bank_id}> {this.props.B.bank_name}  </Link></td>
                 <td style={{ width: "10%" }}>{this.props.B.ifsc}</td>
                 <td style={{ width: "10%" }}>{this.props.B.bank_id}</td>
                 <td style={{ width: "30%" }}>{this.props.B.branch}</td>
