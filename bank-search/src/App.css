@@ -5,6 +5,10 @@
   padding-right: 2%;
   cursor: pointer;
 }
+.App-logo2 {
+  height: 3vmin;
+  cursor: pointer;
+}
 .App {
   background-color: #282c34;
   height: 100%;
@@ -46,6 +50,10 @@
 td{
   text-align: left;
 }
+td:hover:nth-child(2){
+  background-color: #B5B4F5;
+  text-decoration: none;
+}
 
 tr:nth-child(even) {
   background-color: #eee;
@@ -82,4 +90,8 @@ html {
 /* Optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
   background: #FF0000;
+}
+.initialentry{
+  min-height: 68vh; 
+  margin-bottom: 5px;
 }
